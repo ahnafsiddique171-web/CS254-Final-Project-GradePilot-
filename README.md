@@ -16,7 +16,7 @@ Live site link:
 - Save progress using browser local storage
 - Reset all saved data
 - Responsive modern layout
-
+- 
 ## Tech Stack
 
 - HTML
@@ -24,7 +24,7 @@ Live site link:
 - JavaScript
 - Browser Local Storage
 - Cloudflare Pages for deployment
-
+- 
 ## Technical Challenge
 
 One technical challenge was connecting the course grade estimator and GPA calculator into one dashboard while keeping the data organized. The solution was to store course grade categories and GPA courses in separate JavaScript arrays, then update the dashboard whenever the user adds, deletes, saves, or resets data.
