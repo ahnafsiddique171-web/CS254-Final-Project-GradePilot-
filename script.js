@@ -311,54 +311,61 @@ gpaForm.addEventListener("submit", function(event) {
   updateDashboard();
 });
 
-// Real-time validation for the Final Exam Weight input
-document.getElementById("final-weight").addEventListener("input", function() {
+// Unified real-time validation for Final Exam Goal inputs
+function handleRealTimeValidation() {
   const resultBox = document.getElementById("final-result-box");
-  const currentTotalWeight = gradeCategories.reduce((sum, category) => sum + category.weight, 0);
-  
-  // Calculate non-negative values dynamically as user types
-  const enteredWeight = Math.max(0, Number(this.value) || 0);
-  const maxFinalWeight = Math.max(0, 100 - currentTotalWeight);
-  const maxCategoryWeight = Math.max(0, maxFinalWeight - enteredWeight);
+  const fwInput = document.getElementById("final-weight");
+  const tgInput = document.getElementById("target-grade");
 
-  // Push updates to all three UI elements instantly
+  const currentTotalWeight = gradeCategories.reduce((sum, category) => sum + category.weight, 0);
+  const maxFinalWeight = Math.max(0, 100 - currentTotalWeight);
+  
+  // Calculate display values for dynamic capacity texts
+  const displayWeight = Math.max(0, Number(fwInput.value) || 0);
+  const maxCategoryWeight = Math.max(0, maxFinalWeight - displayWeight);
+
+  // Instantly update UI text indicators
   document.getElementById("max-category-weight-display").textContent = `Maximum possible category weight: ${maxCategoryWeight}%`;
-  document.getElementById("current-weight-display").textContent = `${enteredWeight}%`;
+  document.getElementById("current-weight-display").textContent = `${displayWeight}%`;
   document.getElementById("max-weight-display").textContent = `Maximum possible final weight: ${maxFinalWeight}%`;
 
-  if (enteredWeight > maxFinalWeight) {
+  // Evaluate strict validation conditions
+  const fw = Number(fwInput.value);
+  const tg = Number(tgInput.value);
+
+  const isWeightInvalid = fwInput.value !== "" && (fw <= 0 || fw > maxFinalWeight);
+  const isGradeInvalid = tgInput.value !== "" && (tg < 0 || tg > 100);
+
+  // Render the appropriate error state
+  if (isWeightInvalid && isGradeInvalid) {
+    resultBox.style.display = "block";
+    resultBox.textContent = `Please enter a valid final weight (1 - ${maxFinalWeight}) and a valid target grade (0 - 100).`;
+    resultBox.style.backgroundColor = "#fee2e2";
+    resultBox.style.color = "var(--danger)";
+    resultBox.style.border = "1px solid #f87171";
+  } else if (isWeightInvalid) {
     resultBox.style.display = "block";
     resultBox.textContent = `Error: The maximum possible final weight is ${maxFinalWeight}%. Your input exceeds this.`;
     resultBox.style.backgroundColor = "#fee2e2";
     resultBox.style.color = "var(--danger)";
     resultBox.style.border = "1px solid #f87171";
-  } else {
-    // Hide the error box if the user corrects their input
-    if (resultBox.style.backgroundColor === "rgb(254, 226, 226)" || resultBox.style.backgroundColor === "#fee2e2") {
-      resultBox.style.display = "none";
-    }
-  }
-});
-
-// Real-time validation for the Target Course Grade input
-document.getElementById("target-grade").addEventListener("input", function() {
-  const resultBox = document.getElementById("final-result-box");
-  const targetGrade = Number(this.value);
-
-  // Check if the input is not empty and falls outside the 0-100 range
-  if (this.value !== "" && (targetGrade < 0 || targetGrade > 100)) {
+  } else if (isGradeInvalid) {
     resultBox.style.display = "block";
     resultBox.textContent = "Please enter a valid target grade (0 - 100).";
     resultBox.style.backgroundColor = "#fee2e2";
     resultBox.style.color = "var(--danger)";
     resultBox.style.border = "1px solid #f87171";
   } else {
-    // Hide the error box if the user corrects the target grade input
+    // Hide the error box if all fields are valid or blank
     if (resultBox.style.backgroundColor === "rgb(254, 226, 226)" || resultBox.style.backgroundColor === "#fee2e2") {
       resultBox.style.display = "none";
     }
   }
-});
+}
+
+// Bind the unified validation function to both input fields
+document.getElementById("final-weight").addEventListener("input", handleRealTimeValidation);
+document.getElementById("target-grade").addEventListener("input", handleRealTimeValidation);
 
 calculateFinalBtn.addEventListener("click", function() {
   const finalWeightInput = document.getElementById("final-weight").value;
