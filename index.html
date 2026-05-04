@@ -59,23 +59,33 @@
         </p>
       </div>
 
-      <div class="dashboard-grid">
-        <div class="stat-card">
-          <span>Course Grade</span>
-          <strong id="dashboard-course-grade">--%</strong>
-          <p id="dashboard-letter-grade">Letter Grade: --</p>
+<div class="dashboard-split">
+        <div class="dashboard-column">
+          <p class="eyebrow" style="color: var(--primary);">From Tool 1</p>
+          <div class="dashboard-grid two-col">
+            <div class="stat-card course-card">
+              <span>Course Grade</span>
+              <strong id="dashboard-course-grade">--%</strong>
+              <p id="dashboard-letter-grade">Letter Grade: --</p>
+            </div>
+
+            <div class="stat-card course-card">
+              <span>Required Final Score</span>
+              <strong id="dashboard-final-needed">--%</strong>
+              <p>Based on your target course grade.</p>
+            </div>
+          </div>
         </div>
 
-        <div class="stat-card">
-          <span>Required Final Score</span>
-          <strong id="dashboard-final-needed">--%</strong>
-          <p>Based on your target course grade.</p>
-        </div>
-
-        <div class="stat-card">
-          <span>Semester GPA</span>
-          <strong id="dashboard-gpa">--</strong>
-          <p id="dashboard-total-credits">Credits: 0</p>
+        <div class="dashboard-column">
+          <p class="eyebrow" style="color: #10b981;">From Tool 2</p>
+          <div class="dashboard-grid one-col">
+            <div class="stat-card gpa-card">
+              <span>Semester GPA</span>
+              <strong id="dashboard-gpa">--</strong>
+              <p id="dashboard-total-credits">Credits: 0</p>
+            </div>
+          </div>
         </div>
       </div>
 
