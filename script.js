@@ -275,8 +275,16 @@ gpaForm.addEventListener("submit", function(event) {
 });
 
 calculateFinalBtn.addEventListener("click", function() {
-  const finalWeight = Number(document.getElementById("final-weight").value);
-  const targetGrade = Number(document.getElementById("target-grade").value);
+  const finalWeightInput = document.getElementById("final-weight").value;
+  const targetGradeInput = document.getElementById("target-grade").value;
+
+  if (finalWeightInput === "" || targetGradeInput === "") {
+    alert("Please enter both a final exam weight and a target grade.");
+    return;
+  }
+
+  const finalWeight = Number(finalWeightInput);
+  const targetGrade = Number(targetGradeInput);
   const courseGrade = calculateCourseGrade();
 
   if (courseGrade === null) {
@@ -285,7 +293,13 @@ calculateFinalBtn.addEventListener("click", function() {
   }
 
   if (finalWeight <= 0 || finalWeight > 100 || targetGrade < 0 || targetGrade > 100) {
-    alert("Please enter a valid final exam weight and target grade.");
+    alert("Please enter a valid final exam weight (1-100) and target grade (0-100).");
+    return;
+  }
+
+  const currentTotalWeight = gradeCategories.reduce((sum, category) => sum + category.weight, 0);
+  if (currentTotalWeight + finalWeight > 100) {
+    alert(`Error: Your current categories total ${currentTotalWeight}%. A final exam weight of ${finalWeight}% exceeds 100%.`);
     return;
   }
 
