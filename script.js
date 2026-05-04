@@ -145,6 +145,8 @@ function updateDashboard() {
   document.getElementById("max-weight-display").textContent = `Maximum possible final weight: ${maxFinalWeight}%`;
   document.getElementById("current-weight-display").textContent = `${finalWeightVal}%`;
   document.getElementById("max-category-weight-display").textContent = `Maximum possible category weight: ${maxCategoryWeight}%`;
+
+  document.getElementById("available-weight-display").textContent = `${maxCategoryWeight}%`;
   
   const courseGrade = calculateCourseGrade();
   const gpaData = calculateGPA();
@@ -328,6 +330,8 @@ function handleRealTimeValidation() {
   document.getElementById("max-category-weight-display").textContent = `Maximum possible category weight: ${maxCategoryWeight}%`;
   document.getElementById("current-weight-display").textContent = `${displayWeight}%`;
   document.getElementById("max-weight-display").textContent = `Maximum possible final weight: ${maxFinalWeight}%`;
+
+  document.getElementById("available-weight-display").textContent = `${maxCategoryWeight}%`;
 
   // Evaluate strict validation conditions
   const fw = Number(fwInput.value);
