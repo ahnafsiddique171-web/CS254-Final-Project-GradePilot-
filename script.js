@@ -134,6 +134,9 @@ function renderGpaTable() {
 }
 
 function updateDashboard() {
+  const currentTotalWeight = gradeCategories.reduce((sum, category) => sum + category.weight, 0);
+  document.getElementById("max-weight-display").textContent = `Maximum possible final weight: ${100 - currentTotalWeight}%`;
+  
   const courseGrade = calculateCourseGrade();
   const gpaData = calculateGPA();
 
