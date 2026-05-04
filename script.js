@@ -386,8 +386,15 @@ calculateFinalBtn.addEventListener("click", function() {
       resultBox.style.border = "1px solid #93c5fd";
     }
   }
+  
+// 1. PRIORITY CHECK: Are there any categories added yet
+if (gradeCategories.length === 0) {
+    showMessage("Add at least one category before using this tool.", true);
+    return;
+  }
 
-if (finalWeightInput === "" && targetGradeInput === "") {
+  // 2. SECONDARY CHECK: Are the input fields empty?
+  if (finalWeightInput === "" && targetGradeInput === "") {
     showMessage("Please enter both a final exam weight and a target grade.", true);
     return;
   } else if (finalWeightInput === "") {
