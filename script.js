@@ -209,6 +209,7 @@ function deleteGradeCategory(index) {
   renderGradeTable();
   updateDashboard();
   document.getElementById("final-result-box").style.display = "none";
+  document.getElementById("category-error-box").style.display = "none";
 }
 
 function deleteGpaCourse(index) {
@@ -401,6 +402,7 @@ resetBtn.addEventListener("click", function() {
   updateDashboard();
 
   document.getElementById("final-result-box").style.display = "none";
+  document.getElementById("category-error-box").style.display = "none";
 });
 
 tabButtons.forEach(button => {
