@@ -135,7 +135,11 @@ function renderGpaTable() {
 
 function updateDashboard() {
   const currentTotalWeight = gradeCategories.reduce((sum, category) => sum + category.weight, 0);
+  const finalWeightVal = Number(document.getElementById("final-weight").value) || 0;
+
   document.getElementById("max-weight-display").textContent = `Maximum possible final weight: ${100 - currentTotalWeight}%`;
+  document.getElementById("current-weight-display").textContent = `${currentTotalWeight}%`;
+  document.getElementById("max-category-weight-display").textContent = `Maximum possible category weight: ${100 - currentTotalWeight - finalWeightVal}%`;
   
   const courseGrade = calculateCourseGrade();
   const gpaData = calculateGPA();
@@ -302,6 +306,8 @@ document.getElementById("final-weight").addEventListener("input", function() {
   const maxFinalWeight = 100 - currentTotalWeight;
   const enteredWeight = Number(this.value);
 
+  document.getElementById("max-category-weight-display").textContent = `Maximum possible category weight: ${maxFinalWeight - enteredWeight}%`;
+
   if (enteredWeight > maxFinalWeight) {
     resultBox.style.display = "block";
     resultBox.textContent = `Error: The maximum possible final weight is ${maxFinalWeight}%. Your input exceeds this.`;
@@ -397,13 +403,6 @@ resetBtn.addEventListener("click", function() {
   localStorage.removeItem("gradeCategories");
   localStorage.removeItem("gpaCourses");
 
-  renderGradeTable();
-  renderGpaTable();
-  updateDashboard();
-
-  document.getElementById("final-result-box").style.display = "none";
-  document.getElementById("category-error-box").style.display = "none";
-
   // Clear all HTML form inputs
   gradeForm.reset();
   gpaForm.reset();
@@ -411,6 +410,13 @@ resetBtn.addEventListener("click", function() {
   // Clear the standalone final exam calculator inputs
   document.getElementById("final-weight").value = "";
   document.getElementById("target-grade").value = "";
+
+  renderGradeTable();
+  renderGpaTable();
+  updateDashboard();
+
+  document.getElementById("final-result-box").style.display = "none";
+  document.getElementById("category-error-box").style.display = "none";
 });
 
 tabButtons.forEach(button => {
