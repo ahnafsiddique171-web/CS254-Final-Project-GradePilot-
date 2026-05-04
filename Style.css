@@ -441,3 +441,37 @@ footer {
     width: 100%;
   }
 }
+
+/* Dashboard Layout Split */
+.dashboard-split {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.dashboard-grid.two-col {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+
+.dashboard-grid.one-col {
+  grid-template-columns: 1fr;
+  gap: 18px;
+}
+
+/* Tool Data Color Coding */
+.course-card {
+  border-top: 4px solid var(--primary);
+}
+
+.gpa-card {
+  border-top: 4px solid #10b981;
+}
+
+/* Mobile Responsiveness for Split Layout */
+@media (max-width: 900px) {
+  .dashboard-split {
+    grid-template-columns: 1fr;
+  }
+}
