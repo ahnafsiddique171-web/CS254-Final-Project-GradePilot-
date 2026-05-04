@@ -410,8 +410,17 @@ if (finalWeightInput === "" && targetGradeInput === "") {
 const currentTotalWeight = gradeCategories.reduce((sum, category) => sum + category.weight, 0);
   const maxFinalWeight = Math.max(0, 100 - currentTotalWeight);
 
-  if (finalWeight <= 0 || finalWeight > maxFinalWeight || targetGrade < 0 || targetGrade > 100) {
-    showMessage(`Please enter a valid final exam weight (1-${maxFinalWeight}) and target grade (0-100).`, true);
+  const isWeightInvalid = finalWeight <= 0 || finalWeight > maxFinalWeight;
+  const isGradeInvalid = targetGrade < 0 || targetGrade > 100;
+
+  if (isWeightInvalid && isGradeInvalid) {
+    showMessage(`Please enter a valid final weight (1 - ${maxFinalWeight}) and a valid target grade (0 - 100).`, true);
+    return;
+  } else if (isWeightInvalid) {
+    showMessage(`Error: The maximum possible final weight is ${maxFinalWeight}%. Your input exceeds this.`, true);
+    return;
+  } else if (isGradeInvalid) {
+    showMessage("Please enter a valid target grade (0 - 100).", true);
     return;
   }
 
