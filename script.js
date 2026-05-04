@@ -403,6 +403,14 @@ resetBtn.addEventListener("click", function() {
 
   document.getElementById("final-result-box").style.display = "none";
   document.getElementById("category-error-box").style.display = "none";
+
+  // Clear all HTML form inputs
+  gradeForm.reset();
+  gpaForm.reset();
+  
+  // Clear the standalone final exam calculator inputs
+  document.getElementById("final-weight").value = "";
+  document.getElementById("target-grade").value = "";
 });
 
 tabButtons.forEach(button => {
