@@ -224,18 +224,33 @@ gradeForm.addEventListener("submit", function(event) {
   const name = document.getElementById("category-name").value.trim();
   const weight = Number(document.getElementById("category-weight").value);
   const score = Number(document.getElementById("category-score").value);
+  const categoryErrorBox = document.getElementById("category-error-box");
+  
+  // Hide the error box upon a new submission attempt
+  categoryErrorBox.style.display = "none";
 
   if (!name || weight <= 0 || score < 0) {
-    alert("Please enter a valid category name, weight, and score.");
+    categoryErrorBox.textContent = "Please enter a valid category name, weight, and score.";
+    categoryErrorBox.style.display = "block";
     return;
   }
 
-  const currentTotalWeight = gradeCategories.reduce((sum, category) => {
-    return sum + category.weight;
-  }, 0);
+  const currentTotalWeight = gradeCategories.reduce((sum, category) => sum + category.weight, 0);
+  const finalWeightVal = Number(document.getElementById("final-weight").value) || 0;
+  const totalWithFinal = currentTotalWeight + finalWeightVal;
 
-  if (currentTotalWeight + weight > 100) {
-    alert("Are you sure there is no final assessment in this class!");
+  // Rule 2: If the sum is already 100, block further additions
+  if (currentTotalWeight === 100 || totalWithFinal === 100) {
+    categoryErrorBox.textContent = "Cannot add more categories. The total weight capacity is already at 100%.";
+    categoryErrorBox.style.display = "block";
+    return;
+  }
+
+  // Rule 3: If the new category pushes the sum over 100, block it
+  if (totalWithFinal + weight > 100) {
+    const maxAllowed = 100 - totalWithFinal;
+    categoryErrorBox.textContent = `Error: This category exceeds the remaining limit of ${maxAllowed}%.`;
+    categoryErrorBox.style.display = "block";
     return;
   }
 
@@ -277,6 +292,27 @@ gpaForm.addEventListener("submit", function(event) {
   saveData();
   renderGpaTable();
   updateDashboard();
+});
+
+// Real-time validation for the Final Exam Weight input
+document.getElementById("final-weight").addEventListener("input", function() {
+  const resultBox = document.getElementById("final-result-box");
+  const currentTotalWeight = gradeCategories.reduce((sum, category) => sum + category.weight, 0);
+  const maxFinalWeight = 100 - currentTotalWeight;
+  const enteredWeight = Number(this.value);
+
+  if (enteredWeight > maxFinalWeight) {
+    resultBox.style.display = "block";
+    resultBox.textContent = `Error: The maximum possible final weight is ${maxFinalWeight}%. Your input exceeds this.`;
+    resultBox.style.backgroundColor = "#fee2e2";
+    resultBox.style.color = "var(--danger)";
+    resultBox.style.border = "1px solid #f87171";
+  } else {
+    // Hide the error box if the user corrects their input
+    if (resultBox.style.backgroundColor === "rgb(254, 226, 226)" || resultBox.style.backgroundColor === "#fee2e2") {
+      resultBox.style.display = "none";
+    }
+  }
 });
 
 calculateFinalBtn.addEventListener("click", function() {
