@@ -144,9 +144,9 @@
 
           <div class="final-calculator">
             <h3>Final Exam Goal</h3>
-
-            <p class="helper-text">
-              This estimate assumes you maintain your current average on any remaining coursework outside the final exam.
+            
+            <p id="max-weight-display" style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 12px; font-weight: bold;">
+              Maximum possible final weight: 100%
             </p>
 
             <label for="final-weight">Final Exam Weight (%)</label>
@@ -158,6 +158,8 @@
             <button id="calculate-final-btn" class="secondary-btn full-width">
               Calculate Needed Final Score
             </button>
+
+            <div id="final-result-box" style="display: none; margin-top: 16px; padding: 14px; border-radius: 12px; font-weight: bold; text-align: center;"></div>
           </div>
         </div>
       </div>
