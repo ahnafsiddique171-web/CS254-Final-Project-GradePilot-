@@ -1,3 +1,6 @@
+let requiredFinalScore = null;
+let hasAttemptedCalculation = false; //: Tracks if the calculate button has been clicked
+
 const gradeForm = document.getElementById("grade-form");
 const gpaForm = document.getElementById("gpa-form");
 
@@ -311,44 +314,107 @@ gpaForm.addEventListener("submit", function(event) {
   updateDashboard();
 });
 
-// Real-time validation for the Final Exam Weight input
-document.getElementById("final-weight").addEventListener("input", function() {
+function validateFinalExamInputs() {
+  const finalWeightStr = document.getElementById("final-weight").value;
+  const targetGradeStr = document.getElementById("target-grade").value;
   const resultBox = document.getElementById("final-result-box");
+  const calcBtn = document.getElementById("calculate-final-btn");
+
   const currentTotalWeight = gradeCategories.reduce((sum, category) => sum + category.weight, 0);
+  const maxFinalWeight = Math.max(0, 100 - currentTotalWeight);
+
+  const fw = Number(finalWeightStr);
+  const tg = Number(targetGradeStr);
+
+  let errors = [];
+  let disableButton = false;
+
+  // Rule 2: Hard Validation (Active in real-time)
+  if (finalWeightStr !== "" && (fw <= 0 || fw > maxFinalWeight)) {
+    errors.push(`Error: The maximum possible final weight is ${maxFinalWeight}%. Your input exceeds this.`);
+    disableButton = true;
+  }
+
+  if (targetGradeStr !== "" && (tg < 0 || tg > 100)) {
+    errors.push("Please enter a valid target grade (0 - 100).");
+    disableButton = true;
+  }
+
+  // Rule 1: Empty Field Validation (Active only after button click)
+  if (!disableButton && hasAttemptedCalculation) {
+    if (finalWeightStr === "" && targetGradeStr === "") {
+      errors.push("Please enter both a final exam weight and target grade.");
+    } else if (finalWeightStr === "") {
+      errors.push("Please enter a final exam weight.");
+    } else if (targetGradeStr === "") {
+      errors.push("Please enter a target grade.");
+    }
+  }
+
+  // Render UI Updates
+  if (errors.length > 0) {
+    resultBox.style.display = "block";
+    resultBox.innerHTML = errors.join("<br><br>"); // Stacks messages if both are invalid
+    resultBox.style.backgroundColor = "#fee2e2";
+    resultBox.style.color = "var(--danger)";
+    resultBox.style.border = "1px solid #f87171";
+  } else if (!hasAttemptedCalculation || disableButton) {
+    resultBox.style.display = "none";
+  }
+
+  // Manage Button State
+  if (disableButton) {
+    calcBtn.disabled = true;
+    calcBtn.style.opacity = "0.5";
+    calcBtn.style.cursor = "not-allowed";
+  } else {
+    calcBtn.disabled = false;
+    calcBtn.style.opacity = "1";
+    calcBtn.style.cursor = "pointer";
+  }
+
+  return errors.length === 0 && finalWeightStr !== "" && targetGradeStr !== "";
+}
+
+function handleInputChanges() {
+  const resultBox = document.getElementById("final-result-box");
   
-  // Calculate non-negative values dynamically as user types
-  const enteredWeight = Math.max(0, Number(this.value) || 0);
+  // Clear successful calculations instantly when input changes
+  if (resultBox.style.backgroundColor === "rgb(239, 246, 255)" || resultBox.style.backgroundColor === "#eff6ff") {
+    resultBox.style.display = "none";
+  }
+
+  const fwInput = document.getElementById("final-weight");
+  const currentTotalWeight = gradeCategories.reduce((sum, category) => sum + category.weight, 0);
+  const enteredWeight = Math.max(0, Number(fwInput.value) || 0);
   const maxFinalWeight = Math.max(0, 100 - currentTotalWeight);
   const maxCategoryWeight = Math.max(0, maxFinalWeight - enteredWeight);
 
-  // Push updates to all three UI elements instantly
   document.getElementById("max-category-weight-display").textContent = `Maximum possible category weight: ${maxCategoryWeight}%`;
   document.getElementById("current-weight-display").textContent = `${enteredWeight}%`;
   document.getElementById("max-weight-display").textContent = `Maximum possible final weight: ${maxFinalWeight}%`;
 
-  if (enteredWeight > maxFinalWeight) {
-    resultBox.style.display = "block";
-    resultBox.textContent = `Error: The maximum possible final weight is ${maxFinalWeight}%. Your input exceeds this.`;
-    resultBox.style.backgroundColor = "#fee2e2";
-    resultBox.style.color = "var(--danger)";
-    resultBox.style.border = "1px solid #f87171";
-  } else {
-    // Hide the error box if the user corrects their input
-    if (resultBox.style.backgroundColor === "rgb(254, 226, 226)" || resultBox.style.backgroundColor === "#fee2e2") {
-      resultBox.style.display = "none";
-    }
-  }
-});
+  validateFinalExamInputs();
+}
+
+// Bind real-time tracking to both fields
+document.getElementById("final-weight").addEventListener("input", handleInputChanges);
+document.getElementById("target-grade").addEventListener("input", handleInputChanges);
 
 calculateFinalBtn.addEventListener("click", function() {
-  const finalWeightInput = document.getElementById("final-weight").value;
-  const targetGradeInput = document.getElementById("target-grade").value;
+  hasAttemptedCalculation = true;
+  const isValid = validateFinalExamInputs();
+
+  if (!isValid) return;
+
+  const finalWeight = Number(document.getElementById("final-weight").value);
+  const targetGrade = Number(document.getElementById("target-grade").value);
+  const courseGrade = calculateCourseGrade();
   const resultBox = document.getElementById("final-result-box");
 
-  // Helper function to style and show the on-page message
   function showMessage(message, isError = false) {
     resultBox.style.display = "block";
-    resultBox.textContent = message;
+    resultBox.innerHTML = message;
     if (isError) {
       resultBox.style.backgroundColor = "#fee2e2";
       resultBox.style.color = "var(--danger)";
@@ -360,28 +426,8 @@ calculateFinalBtn.addEventListener("click", function() {
     }
   }
 
-  if (finalWeightInput === "" || targetGradeInput === "") {
-    showMessage("Please enter both a final exam weight and a target grade.", true);
-    return;
-  }
-
-  const finalWeight = Number(finalWeightInput);
-  const targetGrade = Number(targetGradeInput);
-  const courseGrade = calculateCourseGrade();
-
   if (courseGrade === null) {
     showMessage("Please add at least one grade category first.", true);
-    return;
-  }
-
-  if (finalWeight <= 0 || finalWeight > 100 || targetGrade < 0 || targetGrade > 100) {
-    showMessage("Please enter a valid final exam weight (1-100) and target grade (0-100).", true);
-    return;
-  }
-
-  const currentTotalWeight = gradeCategories.reduce((sum, category) => sum + category.weight, 0);
-  if (currentTotalWeight + finalWeight > 100) {
-    showMessage(`Error: Your current categories total ${currentTotalWeight}%. A final exam weight of ${finalWeight}% exceeds 100%.`, true);
     return;
   }
 
@@ -392,7 +438,6 @@ calculateFinalBtn.addEventListener("click", function() {
 
   updateDashboard();
 
-  // Displaying successful calculations in the on-page box
   if (requiredFinalScore > 100) {
     showMessage(`You would need ${requiredFinalScore.toFixed(1)}% on the final, which is above 100%. Your target may not be realistically reachable.`, true);
   } else if (requiredFinalScore < 0) {
@@ -420,6 +465,13 @@ resetBtn.addEventListener("click", function() {
 
   localStorage.removeItem("gradeCategories");
   localStorage.removeItem("gpaCourses");
+
+  //Reset validation tracking and button styles
+  hasAttemptedCalculation = false;
+  const calcBtn = document.getElementById("calculate-final-btn");
+  calcBtn.disabled = false;
+  calcBtn.style.opacity = "1";
+  calcBtn.style.cursor = "pointer";
 
   // Clear all HTML form inputs
   gradeForm.reset();
