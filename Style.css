@@ -475,3 +475,27 @@ footer {
     grid-template-columns: 1fr;
   }
 }
+
+/* GPA Tool Specific Coloring */
+.gpa-hero-btn {
+  color: #10b981;
+  border-color: #10b981;
+}
+
+.gpa-hero-btn:hover {
+  background: #ecfdf5;
+  color: #10b981;
+}
+
+.tab-btn.gpa-tab.active {
+  background: #10b981;
+  color: white;
+}
+
+.primary-btn.gpa-btn {
+  background: #10b981;
+}
+
+.primary-btn.gpa-btn:hover {
+  background: #059669;
+}
