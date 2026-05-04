@@ -20,7 +20,7 @@
       <div class="logo">GradePilot</div>
       <div class="nav-links">
         <a href="#course-section">Course Grade</a>
-        <a href="#gpa-section">GPA Calculator</a>
+        <a href="#gpa-section" >GPA Calculator</a>
         <a href="#dashboard-section">Dashboard</a>
       </div>
     </nav>
@@ -34,7 +34,7 @@
         </p>
         <div class="hero-buttons">
           <a href="#course-section" class="primary-btn">Start Calculating</a>
-          <a href="#gpa-section" class="secondary-btn">Calculate GPA</a>
+          <a href="#gpa-section" class="secondary-btn gpa-hero-btn">Calculate GPA</a>
         </div>
       </div>
 
@@ -100,7 +100,7 @@
     <section class="tabs-section">
       <div class="tab-buttons">
         <button class="tab-btn active" data-tab="course-section">Course Grade Estimator</button>
-        <button class="tab-btn" data-tab="gpa-section">GPA Calculator</button>
+        <button class="secondary-btn gpa-hero-btn" data-tab="gpa-section">GPA Calculator</button>
       </div>
     </section>
 
@@ -222,7 +222,8 @@
             <option value="0.0">F</option>
           </select>
 
-          <button type="submit" class="primary-btn full-width">Add Course</button>
+          <button type="submit" class="primary-btn full-width gpa-btn">Add Course</button>
+          <div id="gpa-error-box" style="display: none; margin-top: 12px; padding: 10px; border-radius: 8px; font-size: 0.9rem; font-weight: bold; text-align: center; background-color: #fee2e2; color: var(--danger); border: 1px solid #f87171;"></div>
         </form>
 
         <div class="card">
