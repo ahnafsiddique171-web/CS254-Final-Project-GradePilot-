@@ -138,7 +138,7 @@ function updateDashboard() {
   const finalWeightVal = Number(document.getElementById("final-weight").value) || 0;
 
   document.getElementById("max-weight-display").textContent = `Maximum possible final weight: ${100 - currentTotalWeight}%`;
-  document.getElementById("current-weight-display").textContent = `${currentTotalWeight}%`;
+ document.getElementById("current-weight-display").textContent = `${finalWeightVal}%`;
   document.getElementById("max-category-weight-display").textContent = `Maximum possible category weight: ${100 - currentTotalWeight - finalWeightVal}%`;
   
   const courseGrade = calculateCourseGrade();
@@ -307,6 +307,8 @@ document.getElementById("final-weight").addEventListener("input", function() {
   const enteredWeight = Number(this.value);
 
   document.getElementById("max-category-weight-display").textContent = `Maximum possible category weight: ${maxFinalWeight - enteredWeight}%`;
+
+  document.getElementById("current-weight-display").textContent = `${enteredWeight}%`;
 
   if (enteredWeight > maxFinalWeight) {
     resultBox.style.display = "block";
