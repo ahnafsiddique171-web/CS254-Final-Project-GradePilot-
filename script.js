@@ -340,6 +340,26 @@ document.getElementById("final-weight").addEventListener("input", function() {
   }
 });
 
+// Real-time validation for the Target Course Grade input
+document.getElementById("target-grade").addEventListener("input", function() {
+  const resultBox = document.getElementById("final-result-box");
+  const targetGrade = Number(this.value);
+
+  // Check if the input is not empty and falls outside the 0-100 range
+  if (this.value !== "" && (targetGrade < 0 || targetGrade > 100)) {
+    resultBox.style.display = "block";
+    resultBox.textContent = "Please enter a valid target grade (0 - 100).";
+    resultBox.style.backgroundColor = "#fee2e2";
+    resultBox.style.color = "var(--danger)";
+    resultBox.style.border = "1px solid #f87171";
+  } else {
+    // Hide the error box if the user corrects the target grade input
+    if (resultBox.style.backgroundColor === "rgb(254, 226, 226)" || resultBox.style.backgroundColor === "#fee2e2") {
+      resultBox.style.display = "none";
+    }
+  }
+});
+
 calculateFinalBtn.addEventListener("click", function() {
   const finalWeightInput = document.getElementById("final-weight").value;
   const targetGradeInput = document.getElementById("target-grade").value;
@@ -360,8 +380,14 @@ calculateFinalBtn.addEventListener("click", function() {
     }
   }
 
-  if (finalWeightInput === "" || targetGradeInput === "") {
+if (finalWeightInput === "" && targetGradeInput === "") {
     showMessage("Please enter both a final exam weight and a target grade.", true);
+    return;
+  } else if (finalWeightInput === "") {
+    showMessage("Enter a final weight.", true);
+    return;
+  } else if (targetGradeInput === "") {
+    showMessage("Enter a target grade.", true);
     return;
   }
 
