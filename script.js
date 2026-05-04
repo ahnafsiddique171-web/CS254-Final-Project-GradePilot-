@@ -231,10 +231,6 @@ gradeForm.addEventListener("submit", function(event) {
     return sum + category.weight;
   }, 0);
 
-  const currentTotalWeight = gradeCategories.reduce((sum, category) => {
-      return sum + category.weight;
-    }, 0);
-
   if (currentTotalWeight + weight > 100) {
     alert("Are you sure there is no final assessment in this class!");
     return;
