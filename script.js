@@ -135,11 +135,16 @@ function renderGpaTable() {
 
 function updateDashboard() {
   const currentTotalWeight = gradeCategories.reduce((sum, category) => sum + category.weight, 0);
-  const finalWeightVal = Number(document.getElementById("final-weight").value) || 0;
+  const finalWeightVal = Math.max(0, Number(document.getElementById("final-weight").value) || 0);
+  
+  // Calculate non-negative max values
+  const maxFinalWeight = Math.max(0, 100 - currentTotalWeight);
+  const maxCategoryWeight = Math.max(0, maxFinalWeight - finalWeightVal);
 
-  document.getElementById("max-weight-display").textContent = `Maximum possible final weight: ${100 - currentTotalWeight}%`;
- document.getElementById("current-weight-display").textContent = `${finalWeightVal}%`;
-  document.getElementById("max-category-weight-display").textContent = `Maximum possible category weight: ${100 - currentTotalWeight - finalWeightVal}%`;
+  // Update all three text displays
+  document.getElementById("max-weight-display").textContent = `Maximum possible final weight: ${maxFinalWeight}%`;
+  document.getElementById("current-weight-display").textContent = `${finalWeightVal}%`;
+  document.getElementById("max-category-weight-display").textContent = `Maximum possible category weight: ${maxCategoryWeight}%`;
   
   const courseGrade = calculateCourseGrade();
   const gpaData = calculateGPA();
@@ -221,6 +226,8 @@ function deleteGpaCourse(index) {
   saveData();
   renderGpaTable();
   updateDashboard();
+  
+  document.getElementById("gpa-error-box").style.display = "none";
 }
 
 gradeForm.addEventListener("submit", function(event) {
@@ -280,9 +287,14 @@ gpaForm.addEventListener("submit", function(event) {
   const name = document.getElementById("course-name").value.trim();
   const credits = Number(document.getElementById("credit-hours").value);
   const gradePoints = Number(document.getElementById("letter-grade").value);
+  const gpaErrorBox = document.getElementById("gpa-error-box");
 
-  if (!name || credits <= 0 || Number.isNaN(gradePoints)) {
-    alert("Please enter a valid course name, credit amount, and letter grade.");
+  gpaErrorBox.style.display = "none";
+
+  // Strict validation: Must have a name, 1-6 credits, and a valid dropdown selection
+  if (!name || credits < 1 || credits > 6 || Number.isNaN(gradePoints)) {
+    gpaErrorBox.textContent = "Please enter a valid course name, credit amount (1-6), and letter grade.";
+    gpaErrorBox.style.display = "block";
     return;
   }
 
@@ -303,12 +315,16 @@ gpaForm.addEventListener("submit", function(event) {
 document.getElementById("final-weight").addEventListener("input", function() {
   const resultBox = document.getElementById("final-result-box");
   const currentTotalWeight = gradeCategories.reduce((sum, category) => sum + category.weight, 0);
-  const maxFinalWeight = 100 - currentTotalWeight;
-  const enteredWeight = Number(this.value);
+  
+  // Calculate non-negative values dynamically as user types
+  const enteredWeight = Math.max(0, Number(this.value) || 0);
+  const maxFinalWeight = Math.max(0, 100 - currentTotalWeight);
+  const maxCategoryWeight = Math.max(0, maxFinalWeight - enteredWeight);
 
-  document.getElementById("max-category-weight-display").textContent = `Maximum possible category weight: ${maxFinalWeight - enteredWeight}%`;
-
+  // Push updates to all three UI elements instantly
+  document.getElementById("max-category-weight-display").textContent = `Maximum possible category weight: ${maxCategoryWeight}%`;
   document.getElementById("current-weight-display").textContent = `${enteredWeight}%`;
+  document.getElementById("max-weight-display").textContent = `Maximum possible final weight: ${maxFinalWeight}%`;
 
   if (enteredWeight > maxFinalWeight) {
     resultBox.style.display = "block";
@@ -419,6 +435,7 @@ resetBtn.addEventListener("click", function() {
 
   document.getElementById("final-result-box").style.display = "none";
   document.getElementById("category-error-box").style.display = "none";
+  document.getElementById("gpa-error-box").style.display = "none";
 });
 
 tabButtons.forEach(button => {
@@ -433,6 +450,11 @@ tabButtons.forEach(button => {
     });
 
     document.getElementById(targetTab).classList.add("active-tool");
+    if (targetTab === "gpa-section") {
+      saveBtn.classList.add("gpa-btn");
+    } else {
+      saveBtn.classList.remove("gpa-btn");
+    }
     document.getElementById(targetTab).scrollIntoView({
       behavior: "smooth",
       block: "start"
