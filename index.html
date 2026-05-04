@@ -122,7 +122,10 @@
           <label for="category-name">Category Name</label>
           <input type="text" id="category-name" placeholder="Example: Homework" required />
 
-          <label for="category-weight">Category Weight (%)</label>
+          <div style="display: flex; justify-content: space-between; align-items: baseline; margin: 14px 0 6px;">
+            <label for="category-weight" style="margin: 0;">Category Weight (%)</label>
+            <span id="max-category-weight-display" style="font-size: 0.85rem; color: var(--text-muted);">Maximum possible category weight: 100%</span>
+          </div>
           <input type="number" id="category-weight" placeholder="Example: 20" min="0" max="100" required />
 
           <label for="category-score">Your Score (%)</label>
@@ -157,9 +160,10 @@
           <div class="final-calculator">
             <h3>Final Exam Goal</h3>
             
-            <p id="max-weight-display" style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 12px; font-weight: bold;">
-              Maximum possible final weight: 100%
-            </p>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 0.9rem; font-weight: bold;">
+              <span id="max-weight-display" style="color: var(--text-muted);">Maximum possible final weight: 100%</span>
+              <span style="color: var(--text-muted);">Current weight: <span id="current-weight-display" style="color: var(--primary); font-size: 1.1rem; background-color: #eff6ff; padding: 2px 6px; border-radius: 4px;">0%</span></span>
+            </div>
 
             <label for="final-weight">Final Exam Weight (%)</label>
             <input type="number" id="final-weight" placeholder="Example: 25" min="1" max="100" />
