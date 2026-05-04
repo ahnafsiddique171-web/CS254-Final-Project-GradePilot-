@@ -365,3 +365,31 @@ tabButtons.forEach(button => {
 renderGradeTable();
 renderGpaTable();
 updateDashboard();
+
+// Intercept anchor links to handle tab switching and smooth scrolling
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener("click", function(event) {
+    const targetId = this.getAttribute("href").substring(1);
+    const targetElement = document.getElementById(targetId);
+
+    if (targetElement) {
+      event.preventDefault(); // Stop the default instant jump
+
+      // If the link points to a hidden tab section, activate that tab first
+      if (targetElement.classList.contains("tool-section")) {
+        const correspondingTabBtn = document.querySelector(`.tab-btn[data-tab="${targetId}"]`);
+        if (correspondingTabBtn) {
+          // This triggers existing tab logic, which also handles the scroll
+          correspondingTabBtn.click(); 
+          return;
+        }
+      }
+
+      // For standard links (like the Dashboard link), just smooth scroll
+      targetElement.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }
+  });
+});
