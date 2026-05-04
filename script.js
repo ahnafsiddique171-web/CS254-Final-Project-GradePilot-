@@ -205,6 +205,7 @@ function deleteGradeCategory(index) {
   saveData();
   renderGradeTable();
   updateDashboard();
+  document.getElementById("final-result-box").style.display = "none";
 }
 
 function deleteGpaCourse(index) {
@@ -230,8 +231,12 @@ gradeForm.addEventListener("submit", function(event) {
     return sum + category.weight;
   }, 0);
 
+  const currentTotalWeight = gradeCategories.reduce((sum, category) => {
+      return sum + category.weight;
+    }, 0);
+
   if (currentTotalWeight + weight > 100) {
-    alert("The total category weight cannot exceed 100%.");
+    alert("Are you sure there is no final assessment in this class!");
     return;
   }
 
@@ -247,6 +252,7 @@ gradeForm.addEventListener("submit", function(event) {
   saveData();
   renderGradeTable();
   updateDashboard();
+  document.getElementById("final-result-box").style.display = "none";
 });
 
 gpaForm.addEventListener("submit", function(event) {
@@ -277,9 +283,25 @@ gpaForm.addEventListener("submit", function(event) {
 calculateFinalBtn.addEventListener("click", function() {
   const finalWeightInput = document.getElementById("final-weight").value;
   const targetGradeInput = document.getElementById("target-grade").value;
+  const resultBox = document.getElementById("final-result-box");
+
+  // Helper function to style and show the on-page message
+  function showMessage(message, isError = false) {
+    resultBox.style.display = "block";
+    resultBox.textContent = message;
+    if (isError) {
+      resultBox.style.backgroundColor = "#fee2e2";
+      resultBox.style.color = "var(--danger)";
+      resultBox.style.border = "1px solid #f87171";
+    } else {
+      resultBox.style.backgroundColor = "#eff6ff";
+      resultBox.style.color = "var(--primary-dark)";
+      resultBox.style.border = "1px solid #93c5fd";
+    }
+  }
 
   if (finalWeightInput === "" || targetGradeInput === "") {
-    alert("Please enter both a final exam weight and a target grade.");
+    showMessage("Please enter both a final exam weight and a target grade.", true);
     return;
   }
 
@@ -288,18 +310,18 @@ calculateFinalBtn.addEventListener("click", function() {
   const courseGrade = calculateCourseGrade();
 
   if (courseGrade === null) {
-    alert("Please add at least one grade category first.");
+    showMessage("Please add at least one grade category first.", true);
     return;
   }
 
   if (finalWeight <= 0 || finalWeight > 100 || targetGrade < 0 || targetGrade > 100) {
-    alert("Please enter a valid final exam weight (1-100) and target grade (0-100).");
+    showMessage("Please enter a valid final exam weight (1-100) and target grade (0-100).", true);
     return;
   }
 
   const currentTotalWeight = gradeCategories.reduce((sum, category) => sum + category.weight, 0);
   if (currentTotalWeight + finalWeight > 100) {
-    alert(`Error: Your current categories total ${currentTotalWeight}%. A final exam weight of ${finalWeight}% exceeds 100%.`);
+    showMessage(`Error: Your current categories total ${currentTotalWeight}%. A final exam weight of ${finalWeight}% exceeds 100%.`, true);
     return;
   }
 
@@ -310,12 +332,13 @@ calculateFinalBtn.addEventListener("click", function() {
 
   updateDashboard();
 
+  // Displaying successful calculations in the on-page box
   if (requiredFinalScore > 100) {
-    alert(`You would need ${requiredFinalScore.toFixed(1)}% on the final, which is above 100%. Your target may not be realistically reachable.`);
+    showMessage(`You would need ${requiredFinalScore.toFixed(1)}% on the final, which is above 100%. Your target may not be realistically reachable.`, true);
   } else if (requiredFinalScore < 0) {
-    alert("You have already secured enough points to meet this target, assuming the entered weights are correct.");
+    showMessage("You have already secured enough points to meet this target, assuming the entered weights are correct.", false);
   } else {
-    alert(`You need approximately ${requiredFinalScore.toFixed(1)}% on the final to reach your target grade.`);
+    showMessage(`You need approximately ${requiredFinalScore.toFixed(1)}% on the final to reach your target grade.`, false);
   }
 });
 
@@ -341,6 +364,8 @@ resetBtn.addEventListener("click", function() {
   renderGradeTable();
   renderGpaTable();
   updateDashboard();
+
+  document.getElementById("final-result-box").style.display = "none";
 });
 
 tabButtons.forEach(button => {
