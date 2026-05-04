@@ -374,14 +374,11 @@ calculateFinalBtn.addEventListener("click", function() {
     return;
   }
 
-  if (finalWeight <= 0 || finalWeight > 100 || targetGrade < 0 || targetGrade > 100) {
-    showMessage("Please enter a valid final exam weight (1-100) and target grade (0-100).", true);
-    return;
-  }
+const currentTotalWeight = gradeCategories.reduce((sum, category) => sum + category.weight, 0);
+  const maxFinalWeight = Math.max(0, 100 - currentTotalWeight);
 
-  const currentTotalWeight = gradeCategories.reduce((sum, category) => sum + category.weight, 0);
-  if (currentTotalWeight + finalWeight > 100) {
-    showMessage(`Error: Your current categories total ${currentTotalWeight}%. A final exam weight of ${finalWeight}% exceeds 100%.`, true);
+  if (finalWeight <= 0 || finalWeight > maxFinalWeight || targetGrade < 0 || targetGrade > 100) {
+    showMessage(`Please enter a valid final exam weight (1-${maxFinalWeight}) and target grade (0-100).`, true);
     return;
   }
 
