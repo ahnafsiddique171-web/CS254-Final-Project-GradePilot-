@@ -141,7 +141,8 @@ function updateDashboard() {
   const maxFinalWeight = Math.max(0, 100 - currentTotalWeight);
   const maxCategoryWeight = Math.max(0, maxFinalWeight - finalWeightVal);
 
-  const currentWeightDisplay = document.getElementById("current-weight-display");
+const currentWeightDisplay = document.getElementById("current-weight-display");
+  const fwInputRaw = document.getElementById("final-weight").value;
 
   // Update all three text displays
   document.getElementById("max-weight-display").textContent = `Maximum possible final weight: ${maxFinalWeight}%`;
@@ -149,8 +150,10 @@ function updateDashboard() {
   document.getElementById("max-category-weight-display").textContent = `Maximum possible category weight: ${maxCategoryWeight}%`;
   document.getElementById("available-weight-display").textContent = `${maxCategoryWeight}%`;
 
-  // Ensure badge color is accurate on dashboard refresh
-  if (finalWeightVal > maxFinalWeight) {
+  // NEW: Check for all invalid weight states to ensure color accuracy on dashboard refresh
+  const isWeightCurrentlyInvalid = fwInputRaw !== "" && (Number(fwInputRaw) <= 0 || Number(fwInputRaw) > maxFinalWeight);
+  
+  if (isWeightCurrentlyInvalid) {
     currentWeightDisplay.style.color = "var(--danger)";
     currentWeightDisplay.style.backgroundColor = "#fee2e2";
   } else {
@@ -334,15 +337,24 @@ gpaForm.addEventListener("submit", function(event) {
 
 // Unified real-time validation for Final Exam Goal inputs
 function handleRealTimeValidation() {
-  const resultBox = document.getElementById("final-result-box");
+const resultBox = document.getElementById("final-result-box");
   const fwInput = document.getElementById("final-weight");
   const tgInput = document.getElementById("target-grade");
 
   const currentTotalWeight = gradeCategories.reduce((sum, category) => sum + category.weight, 0);
   const maxFinalWeight = Math.max(0, 100 - currentTotalWeight);
   
-// Calculate display values for dynamic capacity texts
-  const displayWeight = Math.max(0, Number(fwInput.value) || 0);
+  // Evaluate strict validation conditions EARLY so we can use them for UI colors
+  const fw = Number(fwInput.value);
+  const tg = Number(tgInput.value);
+
+  const isWeightTooLow = fwInput.value !== "" && fw <= 0;
+  const isWeightTooHigh = fwInput.value !== "" && fw > maxFinalWeight;
+  const isWeightInvalid = isWeightTooLow || isWeightTooHigh;
+  const isGradeInvalid = tgInput.value !== "" && (tg < 0 || tg > 100);
+
+  // Calculate display values for dynamic capacity texts
+  const displayWeight = Math.max(0, fw || 0);
   const maxCategoryWeight = Math.max(0, maxFinalWeight - displayWeight);
 
   const currentWeightDisplay = document.getElementById("current-weight-display");
@@ -353,21 +365,14 @@ function handleRealTimeValidation() {
   document.getElementById("max-weight-display").textContent = `Maximum possible final weight: ${maxFinalWeight}%`;
   document.getElementById("available-weight-display").textContent = `${maxCategoryWeight}%`;
 
-  // NEW: Toggle red palette if the entered weight exceeds capacity
-  if (displayWeight > maxFinalWeight) {
+  // Toggle red palette if the entered weight is invalid (too high OR too low)
+  if (isWeightInvalid) {
     currentWeightDisplay.style.color = "var(--danger)";
     currentWeightDisplay.style.backgroundColor = "#fee2e2";
   } else {
     currentWeightDisplay.style.color = "var(--primary)";
     currentWeightDisplay.style.backgroundColor = "#eff6ff";
   }
-
-  // Evaluate strict validation conditions
-  const fw = Number(fwInput.value);
-  const tg = Number(tgInput.value);
-
-  const isWeightInvalid = fwInput.value !== "" && (fw <= 0 || fw > maxFinalWeight);
-  const isGradeInvalid = tgInput.value !== "" && (tg < 0 || tg > 100);
 
   // Render the appropriate error state
   if (isWeightInvalid && isGradeInvalid) {
@@ -376,9 +381,15 @@ function handleRealTimeValidation() {
     resultBox.style.backgroundColor = "#fee2e2";
     resultBox.style.color = "var(--danger)";
     resultBox.style.border = "1px solid #f87171";
-  } else if (isWeightInvalid) {
+  } else if (isWeightTooHigh) {
     resultBox.style.display = "block";
     resultBox.textContent = `Error: The maximum possible final weight is ${maxFinalWeight}%. Your input exceeds this.`;
+    resultBox.style.backgroundColor = "#fee2e2";
+    resultBox.style.color = "var(--danger)";
+    resultBox.style.border = "1px solid #f87171";
+  } else if (isWeightTooLow) {
+    resultBox.style.display = "block";
+    resultBox.textContent = "Please enter a valid final exam weight greater than 0.";
     resultBox.style.backgroundColor = "#fee2e2";
     resultBox.style.color = "var(--danger)";
     resultBox.style.border = "1px solid #f87171";
@@ -450,14 +461,19 @@ if (gradeCategories.length === 0) {
 const currentTotalWeight = gradeCategories.reduce((sum, category) => sum + category.weight, 0);
   const maxFinalWeight = Math.max(0, 100 - currentTotalWeight);
 
-  const isWeightInvalid = finalWeight <= 0 || finalWeight > maxFinalWeight;
+  const isWeightTooLow = finalWeight <= 0;
+  const isWeightTooHigh = finalWeight > maxFinalWeight;
+  const isWeightInvalid = isWeightTooLow || isWeightTooHigh;
   const isGradeInvalid = targetGrade < 0 || targetGrade > 100;
 
   if (isWeightInvalid && isGradeInvalid) {
     showMessage(`Please enter a valid final weight (1 - ${maxFinalWeight}) and a valid target grade (0 - 100).`, true);
     return;
-  } else if (isWeightInvalid) {
+  } else if (isWeightTooHigh) {
     showMessage(`Error: The maximum possible final weight is ${maxFinalWeight}%. Your input exceeds this.`, true);
+    return;
+  } else if (isWeightTooLow) {
+    showMessage("Please enter a valid final exam weight greater than 0.", true);
     return;
   } else if (isGradeInvalid) {
     showMessage("Please enter a valid target grade (0 - 100).", true);
