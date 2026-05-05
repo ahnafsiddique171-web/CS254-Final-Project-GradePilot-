@@ -137,16 +137,26 @@ function updateDashboard() {
   const currentTotalWeight = gradeCategories.reduce((sum, category) => sum + category.weight, 0);
   const finalWeightVal = Math.max(0, Number(document.getElementById("final-weight").value) || 0);
   
-  // Calculate non-negative max values
+// Calculate non-negative max values
   const maxFinalWeight = Math.max(0, 100 - currentTotalWeight);
   const maxCategoryWeight = Math.max(0, maxFinalWeight - finalWeightVal);
 
+  const currentWeightDisplay = document.getElementById("current-weight-display");
+
   // Update all three text displays
   document.getElementById("max-weight-display").textContent = `Maximum possible final weight: ${maxFinalWeight}%`;
-  document.getElementById("current-weight-display").textContent = `${finalWeightVal}%`;
+  currentWeightDisplay.textContent = `${finalWeightVal}%`;
   document.getElementById("max-category-weight-display").textContent = `Maximum possible category weight: ${maxCategoryWeight}%`;
-
   document.getElementById("available-weight-display").textContent = `${maxCategoryWeight}%`;
+
+  // Ensure badge color is accurate on dashboard refresh
+  if (finalWeightVal > maxFinalWeight) {
+    currentWeightDisplay.style.color = "var(--danger)";
+    currentWeightDisplay.style.backgroundColor = "#fee2e2";
+  } else {
+    currentWeightDisplay.style.color = "var(--primary)";
+    currentWeightDisplay.style.backgroundColor = "#eff6ff";
+  }
   
   const courseGrade = calculateCourseGrade();
   const gpaData = calculateGPA();
@@ -331,16 +341,26 @@ function handleRealTimeValidation() {
   const currentTotalWeight = gradeCategories.reduce((sum, category) => sum + category.weight, 0);
   const maxFinalWeight = Math.max(0, 100 - currentTotalWeight);
   
-  // Calculate display values for dynamic capacity texts
+// Calculate display values for dynamic capacity texts
   const displayWeight = Math.max(0, Number(fwInput.value) || 0);
   const maxCategoryWeight = Math.max(0, maxFinalWeight - displayWeight);
 
+  const currentWeightDisplay = document.getElementById("current-weight-display");
+
   // Instantly update UI text indicators
   document.getElementById("max-category-weight-display").textContent = `Maximum possible category weight: ${maxCategoryWeight}%`;
-  document.getElementById("current-weight-display").textContent = `${displayWeight}%`;
+  currentWeightDisplay.textContent = `${displayWeight}%`;
   document.getElementById("max-weight-display").textContent = `Maximum possible final weight: ${maxFinalWeight}%`;
-
   document.getElementById("available-weight-display").textContent = `${maxCategoryWeight}%`;
+
+  // NEW: Toggle red palette if the entered weight exceeds capacity
+  if (displayWeight > maxFinalWeight) {
+    currentWeightDisplay.style.color = "var(--danger)";
+    currentWeightDisplay.style.backgroundColor = "#fee2e2";
+  } else {
+    currentWeightDisplay.style.color = "var(--primary)";
+    currentWeightDisplay.style.backgroundColor = "#eff6ff";
+  }
 
   // Evaluate strict validation conditions
   const fw = Number(fwInput.value);
