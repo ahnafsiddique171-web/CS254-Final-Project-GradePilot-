@@ -250,7 +250,16 @@ gradeForm.addEventListener("submit", function(event) {
   }
 
   const currentTotalWeight = gradeCategories.reduce((sum, category) => sum + category.weight, 0);
+  const maxFinalWeightAllowed = Math.max(0, 100 - currentTotalWeight);
   const finalWeightVal = Number(document.getElementById("final-weight").value) || 0;
+
+  // NEW UX FIX: Intercept invalid final exam weights immediately
+  if (finalWeightVal > maxFinalWeightAllowed) {
+    categoryErrorBox.textContent = "Error: please ensure the final exam weight is less than or equal to its maximum possible value before adding any more categories.";
+    categoryErrorBox.style.display = "block";
+    return;
+  }
+
   const totalWithFinal = currentTotalWeight + finalWeightVal;
 
   // Rule 2: If the sum is already 100, block further additions
@@ -262,7 +271,7 @@ gradeForm.addEventListener("submit", function(event) {
 
   // Rule 3: If the new category pushes the sum over 100, block it
   if (totalWithFinal + weight > 100) {
-    const maxAllowed = 100 - totalWithFinal;
+    const maxAllowed = Math.max(0, 100 - totalWithFinal);
     categoryErrorBox.textContent = `Error: This category exceeds the remaining limit of ${maxAllowed}%.`;
     categoryErrorBox.style.display = "block";
     return;
